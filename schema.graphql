@@ -1,0 +1,14 @@
+type NFTPoolFactory @entity {
+  # factory address
+  id: ID!
+  # amount of pools created
+  poolCount: BigInt!
+}
+
+type NFTPool @entity {
+  # address
+  id: ID!
+
+  # total amount of deposit token in pool
+  lpSupply: BigInt!
+}

@@ -1,0 +1,63 @@
+specVersion: 0.0.2
+description: Hiyo
+{{#if graft}}
+features:
+  - grafting
+graft:
+  base: {{graft.base}}
+  block: {{graft.block}}
+{{/if}}
+{{#if graft_pruned}}
+features:
+  - grafting
+graft:
+  base: {{graft_pruned.base}}
+  block: {{graft_pruned.block}}
+{{/if}}
+repository: https://github.com/
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: NFTPoolFactory
+    network: {{network}}
+    source:
+      address: '{{NFTPoolFactory.address}}'
+      abi: NFTPoolFactory
+      startBlock: {{NFTPoolFactory.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/factory.ts
+      entities:
+        - Factory
+        - NFTPool
+      abis:
+        - name: NFTPoolFactory
+          file: ./abis/NFTPoolFactory.json
+        - name: NFTPool
+          file: ./abis/NFTPool.json
+      eventHandlers:
+        - event: PoolCreated(indexed address,address)
+          handler: handlePoolCreated
+templates:
+  - kind: ethereum/contract
+    name: NFTPool
+    network: {{network}}
+    source:
+      abi: NFTPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/pool.ts
+      entities:
+        - NFTPool
+      abis:
+        - name: NFTPool
+          file: ./abis/NFTPool.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+
